@@ -10,6 +10,8 @@ export const transcribes = sqliteTable(
     fileURL: text().notNull().unique(),
     type: text(),
     transcription: text("transcription"),
+    entities: text("entities"),
+    summary: text("summary"),
     createdAt: text("created_at")
       .notNull()
       .default(sql`(unixepoch())`),

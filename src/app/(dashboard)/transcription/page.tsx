@@ -71,7 +71,7 @@ const TranscriptionPage = () => {
     };
 
     if (fileData?.fileURL) {
-      fetchTranscription();
+      void fetchTranscription();
     }
   }, [fileDetailsError, fileData, getTranscription]);
 
