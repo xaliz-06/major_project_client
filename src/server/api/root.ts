@@ -1,6 +1,7 @@
 import { transcribeRouter } from "~/server/api/routers/transcribe";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { entitiesRouter } from "./routers/entities";
+import { patientDetailsRouter } from "./routers/patient-details";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +11,7 @@ import { entitiesRouter } from "./routers/entities";
 export const appRouter = createTRPCRouter({
   transcribe: transcribeRouter,
   entities: entitiesRouter,
+  patientDetails: patientDetailsRouter,
 });
 
 // export type definition of API

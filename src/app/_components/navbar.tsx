@@ -18,7 +18,7 @@ export function Navbar({ visitedPages }: Props) {
     { path: "/transcription", label: "Refined Output" },
     { path: "/entities", label: "Output" },
     { path: "/add-patient-info", label: "Patient Info" },
-    { path: "/final-prescription", label: "Final Prescription" },
+    { path: "/prescription", label: "Final Prescription" },
   ];
 
   return (

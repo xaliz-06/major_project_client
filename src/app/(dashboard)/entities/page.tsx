@@ -14,7 +14,15 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
-import { X, Plus, Pencil, Loader2, Save, ArrowBigRight } from "lucide-react";
+import {
+  X,
+  Plus,
+  Pencil,
+  Loader2,
+  Save,
+  ArrowBigRight,
+  FileEdit,
+} from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -298,7 +306,7 @@ const EntitiesPage = () => {
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <>
-                    <Save className="h-4 w-4" />
+                    <FileEdit className="h-4 w-4" />
                     Go to Edit
                   </>
                 )}
