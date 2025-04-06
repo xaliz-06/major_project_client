@@ -7,20 +7,32 @@ import { eq } from "drizzle-orm";
 export const entitiesRouter = createTRPCRouter({
   generate: publicProcedure
     .input(
-      z.object({ fileId: z.string().min(1), transcription: z.string().min(1) }),
+      z.object({
+        fileId: z.string().min(1),
+        transcription: z.string().min(1),
+        skip: z.boolean().optional(),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
-      const existing = await ctx.db.query.transcribes.findFirst({
-        where: (transcribes, { eq }) => eq(transcribes.id, input.fileId),
-      });
+      if (!input.skip) {
+        const existing = await ctx.db.query.transcribes.findFirst({
+          where: (transcribes, { eq }) => eq(transcribes.id, input.fileId),
+        });
 
-      if (existing && existing.entities !== null) {
-        const data = {
-          summary: existing.summary,
-          prescription: JSON.parse(existing.entities) as Prescription,
-        };
+        await ctx.db
+          .update(transcribes)
+          .set({ transcription: input.transcription })
+          .where(eq(transcribes.id, input.fileId))
+          .returning();
 
-        return data as PredictionResponse;
+        if (existing && existing.entities !== null) {
+          const data = {
+            summary: existing.summary,
+            prescription: JSON.parse(existing.entities) as Prescription,
+          };
+
+          return data as PredictionResponse;
+        }
       }
 
       try {

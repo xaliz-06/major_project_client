@@ -77,15 +77,25 @@ const AddPatientInfoPage = () => {
             <User className="h-6 w-6" />
             Add New Patient Information
           </CardTitle>
-          <Button
-            className="cursor-pointer gap-2 bg-green-500 text-white hover:bg-green-600"
-            variant={"default"}
-            disabled={!patient || isLoading}
-            onClick={handleGoToNext}
-          >
-            <File className="h-6 w-6" />
-            Generate Prescription
-          </Button>
+          <div className="flex items-center justify-center space-x-4">
+            <Button
+              className="cursor-pointer gap-2 bg-rose-500 text-white hover:bg-rose-600"
+              variant={"default"}
+              disabled={!patient || isLoading}
+              onClick={() => router.push(`/entities?fileId=${fileId}`)}
+            >
+              Go Back
+            </Button>
+            <Button
+              className="cursor-pointer gap-2 bg-green-500 text-white hover:bg-green-600"
+              variant={"default"}
+              disabled={!patient || isLoading}
+              onClick={handleGoToNext}
+            >
+              <File className="h-6 w-6" />
+              Generate Prescription
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent>

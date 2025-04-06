@@ -22,6 +22,7 @@ import {
   Save,
   ArrowBigRight,
   FileEdit,
+  RefreshCw,
 } from "lucide-react";
 import {
   Popover,
@@ -59,6 +60,7 @@ const EntitiesPage = () => {
     useState<boolean>(true);
   const [summary, setSummary] = useState<string>("");
   const [prescription, setPrescription] = useState<Prescription>();
+  const [transcriptionText, setTranscriptionText] = useState<string>("");
 
   const [editingValue, setEditingValue] = useState<string>("");
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -74,6 +76,7 @@ const EntitiesPage = () => {
   } | null>(null);
 
   const [isEditEntitiesOpen, setIsEditEntitiesOpen] = useState<boolean>(false);
+  const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
 
   const { data: fileData, error: fileDetailsError } =
     api.transcribe.get.useQuery(
@@ -105,6 +108,7 @@ const EntitiesPage = () => {
           throw new Error("File transcription not found");
         }
 
+        setTranscriptionText(fileData.transcription);
         const result = await generateEntities({
           transcription: fileData.transcription,
           fileId: fileData.id,
@@ -130,6 +134,29 @@ const EntitiesPage = () => {
       void fetchEntities();
     }
   }, [fileDetailsError, fileData, generateEntities, isGeneratingError]);
+
+  const handleRegenerateEntities = async () => {
+    if (!transcriptionText || !fileId) return;
+
+    setIsRegenerating(true);
+    try {
+      const result = await generateEntities({
+        transcription: transcriptionText,
+        fileId,
+        skip: true,
+      });
+
+      if (result) {
+        setSummary(result.summary);
+        setPrescription(result.prescription);
+        toast.success("Entities regenerated successfully!");
+      }
+    } catch (error) {
+      toast.error("Failed to regenerate entities. Please try again.");
+    } finally {
+      setIsRegenerating(false);
+    }
+  };
 
   const handleEdit = (field: string, index: number, value: string) => {
     console.log(field, index, value);
@@ -262,14 +289,50 @@ const EntitiesPage = () => {
     <div className="container mx-auto p-4">
       <div className="mx-6 my-4 flex min-h-[calc(100vh-80px)] flex-col items-center justify-center rounded-lg bg-gray-300 p-4">
         <div className="mb-8 w-full rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-xl font-semibold">Original Transcription</h2>
+          <div className="flex justify-between">
+            <h2 className="mb-4 text-xl font-semibold">
+              Original Transcription
+            </h2>
+            <div className="flex gap-2">
+              <Button
+                variant={"outline"}
+                className="cursor-pointer gap-2"
+                disabled={!prescription || isRegenerating}
+                onClick={handleRegenerateEntities}
+              >
+                {isRegenerating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4" />
+                    Regenerate Entities
+                  </>
+                )}
+              </Button>
+              <Button
+                variant={"default"}
+                className="cursor-pointer gap-2 bg-rose-500 px-8 text-white hover:bg-rose-600"
+                disabled={!prescription || isSaving || isEditEntitiesOpen}
+                onClick={() => router.push("/transcription?fileId=" + fileId)}
+              >
+                Go Back
+              </Button>
+            </div>
+          </div>
+          <div className="mb-2 rounded bg-yellow-50 p-2 text-sm text-yellow-800">
+            <p>
+              <strong>Note:</strong> Only regenerate if you&apos;ve modified the
+              transcription text and want to update the extracted entities.
+            </p>
+          </div>
           <Textarea
-            readOnly
-            value={fileData?.transcription ?? "No transcription available"}
+            value={transcriptionText}
+            onChange={(e) => setTranscriptionText(e.target.value)}
             className="min-h-[150px] w-full font-mono text-sm"
             placeholder="Transcription will appear here..."
           />
         </div>
+
         <div className="mb-8 rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-4 text-xl font-semibold">Summary</h2>
           <p className="text-gray-700">{summary}</p>
