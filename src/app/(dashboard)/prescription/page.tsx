@@ -1,17 +1,16 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { api } from "~/trpc/react";
 import { PrescriptionPDF } from "./prescription-pdf";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
-import { File, Loader2, User, X } from "lucide-react";
+import { File, Loader2, X } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import type { Prescription } from "~/lib/types/entities";
-import { toast } from "sonner";
 
-const PrescriptionPage = () => {
+const PrescriptionPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileId = searchParams.get("fileId");
@@ -216,6 +215,20 @@ const ErrorMessage = () => {
         </CardContent>
       </Card>
     </div>
+  );
+};
+
+const PrescriptionPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
+      <PrescriptionPageContent />
+    </Suspense>
   );
 };
 

@@ -21,14 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import {
-  CalendarIcon,
-  User,
-  Phone,
-  Mail,
-  Stethoscope,
-  Loader2,
-} from "lucide-react";
+import { CalendarIcon, User, Phone, Stethoscope, Loader2 } from "lucide-react";
 import { cn } from "~/lib/utils";
 import {
   Select,
@@ -136,7 +129,9 @@ const IdentifiedPatientForm = ({ fileId, prefillData }: Props) => {
         toast.success("Patient details saved successfully");
       }
     } catch (error) {
-      toast.error("Error saving patient details");
+      toast.error(
+        `Error saving patient details: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   };
 

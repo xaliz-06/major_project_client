@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { GeneralPrescription, Prescription } from "~/lib/types/entities";
 import { api } from "~/trpc/react";
@@ -51,7 +51,7 @@ import {
 import { Textarea } from "~/components/ui/textarea";
 import EditEntities from "~/app/_components/edit-entities";
 
-const EntitiesPage = () => {
+const EntitiesPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileId = searchParams.get("fileId");
@@ -124,7 +124,9 @@ const EntitiesPage = () => {
           toast.success("Entities generated!");
         }
       } catch (error) {
-        toast.error("Failed to generate entities. Please try again.");
+        toast.error(
+          `Failed to generate entities: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
       } finally {
         setIsGeneratingEntities(false);
       }
@@ -152,7 +154,9 @@ const EntitiesPage = () => {
         toast.success("Entities regenerated successfully!");
       }
     } catch (error) {
-      toast.error("Failed to regenerate entities. Please try again.");
+      toast.error(
+        `Failed to generate entities: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setIsRegenerating(false);
     }
@@ -168,10 +172,18 @@ const EntitiesPage = () => {
   const handleSaveEdit = () => {
     if (editingField && editingIndex !== null && prescription) {
       const updatedPrescription = { ...prescription };
-      if (updatedPrescription[editingField]) {
-        updatedPrescription[editingField][editingIndex] = editingValue;
+      const field = editingField as keyof Prescription;
+      if (
+        updatedPrescription[field] &&
+        Array.isArray(updatedPrescription[field])
+      ) {
+        const updatedArray = [...(updatedPrescription[field] as string[])];
+        updatedArray[editingIndex] = editingValue;
+
+        updatedPrescription[field] = updatedArray;
         setPrescription(updatedPrescription);
       }
+
       setEditingField(null);
       setEditingIndex(null);
       setEditingValue("");
@@ -181,9 +193,16 @@ const EntitiesPage = () => {
   const handleAddValue = (field: string) => {
     if (newValue.trim() && prescription) {
       const updatedPrescription = { ...prescription };
-      updatedPrescription[field] ??= [];
-      updatedPrescription[field].push(newValue);
-      setPrescription(updatedPrescription);
+      const fieldKey = field as keyof Prescription;
+
+      updatedPrescription[fieldKey] ??= [] as unknown;
+
+      const fieldArray = updatedPrescription[fieldKey];
+      if (Array.isArray(fieldArray)) {
+        fieldArray.push(newValue);
+        setPrescription(updatedPrescription);
+      }
+
       setNewValue("");
       setAddingField(null);
     }
@@ -193,10 +212,14 @@ const EntitiesPage = () => {
     if (deletingItem && prescription) {
       const { field, index } = deletingItem;
       const updatedPrescription = { ...prescription };
-      if (updatedPrescription[field]) {
-        updatedPrescription[field].splice(index, 1);
+      const fieldKey = field as keyof Prescription;
+      const fieldArray = updatedPrescription[fieldKey];
+
+      if (Array.isArray(fieldArray)) {
+        fieldArray.splice(index, 1);
         setPrescription(updatedPrescription);
       }
+
       setDeletingItem(null);
     }
   };
@@ -426,7 +449,7 @@ const EntitiesPage = () => {
                                 </span>
                                 <button
                                   onClick={() =>
-                                    handleEdit(field, index, value)
+                                    handleEdit(field, index, value as string)
                                   }
                                   className="cursor-pointer text-blue-500 hover:text-blue-700"
                                 >
@@ -549,6 +572,20 @@ const EntitiesPage = () => {
         </AlertDialog>
       </div>
     </div>
+  );
+};
+
+const EntitiesPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
+      <EntitiesPageContent />
+    </Suspense>
   );
 };
 

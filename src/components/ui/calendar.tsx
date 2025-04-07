@@ -12,7 +12,7 @@ import {
 } from "./select";
 import { cn } from "~/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, DropdownProps } from "react-day-picker";
+import { DayPicker, type DropdownProps } from "react-day-picker";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -85,7 +85,7 @@ function Calendar({
                 <ScrollArea className="h-80">
                   {options.map((option, id: number) => (
                     <SelectItem
-                      key={`${option.props.value}-${id}`}
+                      key={`${option.props.value?.toString()}-${id}`}
                       value={option.props.value?.toString() ?? ""}
                     >
                       {option.props.children}
@@ -96,8 +96,8 @@ function Calendar({
             </Select>
           );
         },
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />

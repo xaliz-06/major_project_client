@@ -3,6 +3,7 @@ import { z } from "zod";
 const prescriptionSchema = z
   .object({
     Medicines: z.array(z.string()).optional(),
+    Medication: z.array(z.string()).optional(),
     Dosage: z.array(z.string()).optional(),
     Frequency: z.array(z.string()).optional(),
     Duration: z.array(z.string()).optional(),
@@ -20,11 +21,13 @@ const prescriptionSchema = z
   })
   .passthrough();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const predictionResponseSchema = z.object({
   summary: z.string(),
   prescription: prescriptionSchema,
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const generalPrescriptionSchema = z.object({
   medicine: z.string(),
   dosage: z.string(),

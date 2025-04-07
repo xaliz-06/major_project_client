@@ -1,13 +1,14 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/trpc/react";
 
-const TranscriptionPage = () => {
+const TranscriptionPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileId = searchParams.get("fileId");
@@ -29,12 +30,8 @@ const TranscriptionPage = () => {
     },
   );
 
-  const {
-    mutateAsync: getTranscription,
-    isPending: isTranscribing,
-    isError: isTranscribingError,
-    isSuccess: isTranscribingSuccess,
-  } = api.transcribe.getTranscription.useMutation();
+  const { mutateAsync: getTranscription, isError: isTranscribingError } =
+    api.transcribe.getTranscription.useMutation();
 
   const { mutateAsync: updateTranscription } =
     api.transcribe.update.useMutation();
@@ -64,7 +61,9 @@ const TranscriptionPage = () => {
           );
         }
       } catch (error) {
-        toast.error("Failed to fetch transcription. Please try again.");
+        toast.error(
+          `Failed to fetch transcription: ${error instanceof Error ? error.message : String(error)}`,
+        );
       } finally {
         setIsLoadingTranscription(false);
       }
@@ -90,7 +89,9 @@ const TranscriptionPage = () => {
       setIsEditing(false);
       toast.success("Transcription updated successfully!");
     } catch (error) {
-      toast.error("Failed to save changes. Please try again.");
+      toast.error(
+        `Failed to save changes. : ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   };
 
@@ -219,6 +220,20 @@ const TranscriptionTextarea = ({
         )}
       </div>
     </>
+  );
+};
+
+const TranscriptionPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
+      <TranscriptionPageContent />
+    </Suspense>
   );
 };
 

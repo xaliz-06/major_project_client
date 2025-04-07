@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { File, Loader2, User } from "lucide-react";
@@ -12,7 +12,7 @@ import type { Patient } from "~/server/db/schema";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 
-const AddPatientInfoPage = () => {
+const AddPatientInfoPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileId = searchParams.get("fileId");
@@ -153,6 +153,20 @@ const AddPatientInfoPage = () => {
         </CardContent>
       </Card>
     </div>
+  );
+};
+
+const AddPatientInfoPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
+      <AddPatientInfoPageContent />
+    </Suspense>
   );
 };
 

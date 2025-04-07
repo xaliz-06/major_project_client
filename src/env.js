@@ -12,6 +12,7 @@ export const env = createEnv({
     TURSO_DATABASE_URL: z.string(),
     TURSO_AUTH_TOKEN: z.string(),
     ASSEMBLY_AI_API_KEY: z.string(),
+    MODEL_URL: z.string(),
   },
 
   /**
@@ -33,6 +34,7 @@ export const env = createEnv({
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
     TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
     ASSEMBLY_AI_API_KEY: process.env.ASSEMBLY_AI_API_KEY,
+    MODEL_URL: process.env.MODEL_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

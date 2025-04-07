@@ -5,10 +5,6 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { transcribes } from "~/server/db/schema";
 import { aaiClient } from "~/utils/assemblyai";
 
-type TranscriptionResponse = {
-  text: string;
-};
-
 export const transcribeRouter = createTRPCRouter({
   add: publicProcedure
     .input(

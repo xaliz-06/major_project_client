@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import type { PredictionResponse, Prescription } from "~/lib/types/entities";
 import { transcribes } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
+import { env } from "~/env";
 
 export const entitiesRouter = createTRPCRouter({
   generate: publicProcedure
@@ -36,7 +37,7 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/predict", {
+        const response = await fetch(env.MODEL_URL as string, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

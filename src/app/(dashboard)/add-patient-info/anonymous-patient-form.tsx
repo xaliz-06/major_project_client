@@ -27,7 +27,6 @@ import { Separator } from "~/components/ui/separator";
 import {
   createPatientSchema,
   genderEnum,
-  type CreatePatientInput,
   type PrefillData,
 } from "~/lib/types/patient";
 import { api } from "~/trpc/react";

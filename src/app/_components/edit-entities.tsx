@@ -25,9 +25,13 @@ type Props = {
 };
 
 const EditEntities = ({ entities, onSave }: Props) => {
+  const medicinesFromMedicines = entities.Medicines ?? [];
+  const medicinesFromMedication = entities.Medication ?? [];
+
+  // Combine and deduplicate medicines
   const allMedicines = [
-    ...(entities.Medicines ?? []),
-    ...(entities.Medication ?? []),
+    ...medicinesFromMedicines,
+    ...medicinesFromMedication,
   ].filter((m, i, arr) => arr.indexOf(m) === i);
 
   let parsedEntities: GeneralPrescription[];
