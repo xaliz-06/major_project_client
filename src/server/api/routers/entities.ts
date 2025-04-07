@@ -37,7 +37,8 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       try {
-        const response = await fetch(env.MODEL_URL as string, {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const response = await fetch(env.MODEL_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
