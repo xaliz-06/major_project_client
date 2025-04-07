@@ -5,6 +5,10 @@ import { transcribes } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 import { env } from "~/env";
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const MODEL_URL =
+  env.NODE_ENV === "production" ? env.MODEL_PROD_URL : env.MODEL_LOCAL_URL;
+
 export const entitiesRouter = createTRPCRouter({
   generate: publicProcedure
     .input(
@@ -37,8 +41,7 @@ export const entitiesRouter = createTRPCRouter({
       }
 
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        const response = await fetch(env.MODEL_URL, {
+        const response = await fetch(`${MODEL_URL}/api/v1/predict`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
